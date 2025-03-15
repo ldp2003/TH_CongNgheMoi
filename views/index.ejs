@@ -18,49 +18,69 @@
             <input type="text" name="department" placeholder="Khoa"><br>
             <button type="submit">Lưu</button>
         </form>
-        <form action="/delete" method="post">
-            <table>
-                <caption>Danh sách các môn học</caption>
-                <thead>
-                    <tr>
-                        <th>STT</th>
-                        <th>Tên môn học</th>
-                        <th>Loại môn học</th>
-                        <th>Học kỳ</th>
-                        <th>Khoa</th>
-                        <th>Xóa</th>
-                        <th>Chọn nhiều</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% courses.forEach(item=> { %>
-                        <tr>
-                            <td>
-                                <%= item.id %>
-                            </td>
-                            <td>
-                                <%= item.name %>
-                            </td>
-                            <td>
-                                <%= item.course_type %>
-                            </td>
-                            <td>
-                                <%= item.semester %>
-                            </td>
-                            <td>
-                                <%= item.department %>
-                            </td>
-                            <td><form action="/delete/<%= item.id %>">
-                                <input type="hidden" name="id" value="<%= item.id %>">
-                                <button type="submit">Xóa</button>
-                            </form></td>
-                            <td><input type="checkbox" name="courseIds" value="<%= item.id %>"></td>
-                        </tr>
-                        <% }); %>
-                </tbody>
-            </table>
 
-            <button type="submit">Xóa</button>
+        <table>
+            <caption>Danh sách các môn học</caption>
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Tên môn học</th>
+                    <th>Loại môn học</th>
+                    <th>Học kỳ</th>
+                    <th>Khoa</th>
+                    <th>Xóa</th>
+                    <th>Chọn nhiều</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for (let i=0; i < courses.length; i++) { %>
+                    <tr>
+                        <td>
+                            <%=i+1 %>
+                        </td>
+                        <td>
+                            <%=courses[i].tenMonHoc %>
+                        </td>
+                        <td>
+                            <%=courses[i].loai %>
+                        </td>
+                        <td>
+                            <%=courses[i].hocKy %>
+                        </td>
+                        <td>
+                            <%=courses[i].khoa %>
+                        </td>
+                        <td>
+                            <form action="/delete/<%=courses[i].id %>">
+                                <input type="hidden" name="id" value="<%=courses[i].id %>">
+                                <button type="submit" class="delete">Xóa</button>
+                            </form>
+                        </td>
+                        <td><input type="checkbox" name="courseIds" value="<%=courses[i].id %>" class="course-checkbox">
+                        </td>
+                    </tr>
+                    <% }; %>
+            </tbody>
+        </table>
+        <form action="/delete" method="post">
+            <button type="submit" class="delete" id="delete-selected" disabled>Xóa</button>
         </form>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const deleteButton = document.getElementById('delete-selected');
+            const checkboxes = document.querySelectorAll('.course-checkbox');
+
+            function updateDeleteButtonState() {
+                const anyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+                deleteButton.disabled = !anyChecked;
+            }
+
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updateDeleteButtonState);
+            });
+
+            updateDeleteButtonState();
+        });
+    </script>
 </body>
