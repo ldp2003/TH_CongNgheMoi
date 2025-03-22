@@ -9,7 +9,8 @@ const SubjectModel = {
                 tenMonHoc: params.name,
                 loai: params.course_type,
                 hocKy: params.semester,
-                khoa: params.department
+                khoa: params.department,
+                image: params.image
             }
         };
 
@@ -56,11 +57,12 @@ const SubjectModel = {
         }
     },
 
-    deleteSubject: async (id) => {
+    deleteSubject: async (id, name) => {
         const params = {
             TableName: tableName,
             Key: {
-                id: id
+                id: id,
+                tenMonHoc: name
             }
         };
 

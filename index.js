@@ -5,6 +5,7 @@ const app = express();
 let courses = require('./data');
 const bodyParser = require('body-parser');
 const SubjectModel = require('./data.model');
+const fileService = require('./file.service');
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('./views'));
@@ -12,6 +13,17 @@ app.use(bodyParser.json());
 
 app.set('view engine', 'ejs');
 app.set('views', './views');
+
+const multer = require('multer');
+
+const storage = multer.memoryStorage({
+    destination: function (req, file, callback) {
+        callback(null, '');
+    }
+});
+
+const upload = multer({ storage: storage, limits: { fileSize: 1024*1024*10 } });
+
 
 
 
@@ -25,7 +37,7 @@ app.get('/', async (req, res) => {
     }
 });
 
-app.post('/save', async (req, res) => {
+app.post('/save', upload.single('file'), async (req, res) => {
     try {
         const id = Number(req.body.id);
         const name = req.body.name;
@@ -33,12 +45,20 @@ app.post('/save', async (req, res) => {
         const semester = req.body.semester;
         const department = req.body.department;
 
+        const image = req.body.file;
+
+        console.log(req.body);
+        console.log(image);
+        const url = await fileService.uploadFile(image);
+
+
         const params = {
             "id": id,
             "name": name,
             "course_type": course_type,
             "semester": semester,
-            "department": department
+            "department": department,
+            "image": url
         }
 
         await SubjectModel.createSubject(params);
@@ -68,12 +88,13 @@ app.post('/delete', async (req, res) => {
     res.redirect('/');
 });
 
-app.get('/delete/:id', (req, res) => {
-    const courseId = req.params.id;
+app.post('/delete/:id/:name', async (req, res)  => {
+    const courseId = parseInt(req.params.id, 10);
+    const name = req.params.name;
     console.log(courseId);
-    const index = courses.findIndex(course => course.id === courseId);
-    if (index !== -1) {
-        courses.splice(index, 1);
+    console.log(name);
+    if (courseId) {
+        await SubjectModel.deleteSubject(courseId, name);
         res.redirect('/');
     } else {
         res.status(404).send('Course not found');

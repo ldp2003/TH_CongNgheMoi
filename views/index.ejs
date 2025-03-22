@@ -10,12 +10,13 @@
 
 <body>
     <div class="content">
-        <form action="/save" method="post">
+        <form action="/save" method="post" enctype="multipart/form-data">
             <input type="text" name="id" placeholder="Mã môn học"><br>
             <input type="text" name="name" placeholder="Tên môn học"><br>
             <input type="text" name="course_type" placeholder="Loại môn học"><br>
             <input type="text" name="semester" placeholder="Học kỳ"><br>
             <input type="text" name="department" placeholder="Khoa"><br>
+            <input type="file" name="file"><br>
             <button type="submit">Lưu</button>
         </form>
 
@@ -28,6 +29,7 @@
                     <th>Loại môn học</th>
                     <th>Học kỳ</th>
                     <th>Khoa</th>
+                    <th>Image</th>
                     <th>Xóa</th>
                     <th>Chọn nhiều</th>
                 </tr>
@@ -51,8 +53,10 @@
                             <%=courses[i].khoa %>
                         </td>
                         <td>
-                            <form action="/delete/<%=courses[i].id %>">
-                                <input type="hidden" name="id" value="<%=courses[i].id %>">
+                            <img src="/uploads/<%=courses[i].image %>" alt="<%=courses[i].tenMonHoc %>" width="100">
+                        </td>
+                        <td>
+                            <form action="/delete/<%=courses[i].id %>/<%=courses[i].tenMonHoc %>" method="post">
                                 <button type="submit" class="delete">Xóa</button>
                             </form>
                         </td>
